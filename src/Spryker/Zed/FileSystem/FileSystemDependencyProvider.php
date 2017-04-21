@@ -5,10 +5,10 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace Spryker\Service\FileSystem\Exception;
+namespace Spryker\Business\FileSystem;
 
-use Exception;
+use Spryker\Zed\Kernel\AbstractBundleDependencyProvider;
 
-class FileSystemInvalidConfigurationException extends Exception
+class FileSystemDependencyProvider extends AbstractBundleDependencyProvider
 {
 }

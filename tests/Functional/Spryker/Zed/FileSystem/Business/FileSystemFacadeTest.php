@@ -11,9 +11,6 @@ use Codeception\Configuration;
 use FileSystem\Stub\FileSystemConfigStub;
 use League\Flysystem\Filesystem;
 use PHPUnit_Framework_TestCase;
-use Spryker\Service\FileSystem\FileSystemService;
-use Spryker\Service\FileSystem\FileSystemServiceFactory;
-use Spryker\Service\FileSystem\Model\FileSystemStorageInterface;
 
 /**
  * @group Functional
@@ -22,7 +19,7 @@ use Spryker\Service\FileSystem\Model\FileSystemStorageInterface;
  * @group FileSystem
  * @group FileSystemServiceTest
  */
-class FileSystemServiceTest extends PHPUnit_Framework_TestCase
+class FileSystemFacadeTest extends PHPUnit_Framework_TestCase
 {
 
     const RESOURCE_FILE_NAME = 'fileName.jpg';

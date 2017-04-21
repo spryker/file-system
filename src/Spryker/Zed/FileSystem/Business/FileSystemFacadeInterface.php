@@ -5,12 +5,12 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace Spryker\Service\FileSystem;
+namespace Spryker\Business\FileSystem;
 
 /**
- * @method \Spryker\Service\FileSystem\FileSystemServiceFactory getFactory()
+ * @method \Spryker\Business\FileSystem\FileSystemServiceFactory getFactory()
  */
-interface FileSystemServiceInterface
+interface FileSystemFacadeInterface
 {
 
     /**
@@ -18,14 +18,14 @@ interface FileSystemServiceInterface
      *
      * @param string $name
      *
-     * @return \Spryker\Service\FileSystem\Model\FileSystemStorageInterface
+     * @return \Spryker\Business\FileSystem\Model\FileSystemStorageInterface
      */
     public function getStorageByName($name);
 
     /**
      * @api
      *
-     * @return \Spryker\Service\FileSystem\Model\FileSystemStorageInterface[]
+     * @return \Spryker\Business\FileSystem\Model\FileSystemStorageInterface[]
      */
     public function getStorageCollection();
 
