@@ -5,10 +5,10 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace Spryker\Service\FileSystem;
+namespace Spryker\Business\FileSystem;
 
-use Spryker\Service\Kernel\AbstractBundleConfig;
 use Spryker\Shared\FileSystem\FileSystemConstants;
+use Spryker\Zed\Kernel\AbstractBundleConfig;
 
 class FileSystemConfig extends AbstractBundleConfig
 {
