@@ -19,9 +19,6 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     protected $fileSystemReader;
 
-    /**
-     * @param \Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemReaderPluginInterface $fileSystemReaderPlugin
-     */
     public function __construct(FileSystemReaderPluginInterface $fileSystemReaderPlugin)
     {
         $this->fileSystemReader = $fileSystemReaderPlugin;

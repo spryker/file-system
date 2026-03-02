@@ -18,9 +18,6 @@ class FileSystemStream implements FileSystemStreamInterface
      */
     protected $fileSystemStream;
 
-    /**
-     * @param \Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemStreamPluginInterface $fileSystemStreamPlugin
-     */
     public function __construct(FileSystemStreamPluginInterface $fileSystemStreamPlugin)
     {
         $this->fileSystemStream = $fileSystemStreamPlugin;

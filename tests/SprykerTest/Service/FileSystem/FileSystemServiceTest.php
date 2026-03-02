@@ -100,9 +100,6 @@ class FileSystemServiceTest extends Unit
      */
     protected $testDataFileSystemRootDirectory;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -121,11 +118,6 @@ class FileSystemServiceTest extends Unit
         $this->fileSystemService->setFactory($factory);
     }
 
-    /**
-     * @param \Spryker\Service\Kernel\Container $container
-     *
-     * @return \Spryker\Service\Kernel\Container
-     */
     protected function setupContainerAndFlysystemService(Container $container): Container
     {
         $flysystemContainer = new Container();
@@ -172,17 +164,11 @@ class FileSystemServiceTest extends Unit
         return $container;
     }
 
-    /**
-     * @return void
-     */
     protected function tearDown(): void
     {
         $this->directoryCleanup();
     }
 
-    /**
-     * @return void
-     */
     public function testHasShouldReturnFalseWithNonExistingFile(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -193,9 +179,6 @@ class FileSystemServiceTest extends Unit
         $this->assertFalse($has);
     }
 
-    /**
-     * @return void
-     */
     public function testHasShouldReturnTrueWithExistingFile(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -206,9 +189,6 @@ class FileSystemServiceTest extends Unit
         $this->assertTrue($has);
     }
 
-    /**
-     * @return void
-     */
     public function testReadWithNonExistingFileShouldThrowException(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -219,9 +199,6 @@ class FileSystemServiceTest extends Unit
         $this->fileSystemService->read($fileSystemQueryTransfer);
     }
 
-    /**
-     * @return void
-     */
     public function testReadWithExistingFileShouldReturnContent(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -232,9 +209,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame(static::FILE_CONTENT, $contents);
     }
 
-    /**
-     * @return void
-     */
     public function testWrite(): void
     {
         $fileSystemContentTransfer = $this->createContentTransfer();
@@ -244,9 +218,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame(static::FILE_CONTENT, $this->getDocumentFileContent());
     }
 
-    /**
-     * @return void
-     */
     public function testDelete(): void
     {
         $fileSystemDeleteTransfer = new FileSystemDeleteTransfer();
@@ -259,9 +230,6 @@ class FileSystemServiceTest extends Unit
         $this->assertFileDoesNotExist($this->getDocumentFileName());
     }
 
-    /**
-     * @return void
-     */
     public function testRename(): void
     {
         $fileSystemRenameTransfer = new FileSystemRenameTransfer();
@@ -279,9 +247,6 @@ class FileSystemServiceTest extends Unit
         $this->assertFileExists($renamedFile);
     }
 
-    /**
-     * @return void
-     */
     public function testCopy(): void
     {
         $fileSystemCopyTransfer = new FileSystemCopyTransfer();
@@ -299,9 +264,6 @@ class FileSystemServiceTest extends Unit
         $this->assertFileExists($copiedFile);
     }
 
-    /**
-     * @return void
-     */
     public function testGetMimeType(): void
     {
         $this->createDocumentFile();
@@ -312,9 +274,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame('text/plain', $mimeType);
     }
 
-    /**
-     * @return void
-     */
     public function testGetTimestamp(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -327,9 +286,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame($timestamp, $timestampExpected);
     }
 
-    /**
-     * @return void
-     */
     public function testGetSize(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -343,9 +299,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame($sizeExpected, $size);
     }
 
-    /**
-     * @return void
-     */
     public function testIsPrivate(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -356,9 +309,6 @@ class FileSystemServiceTest extends Unit
         $this->assertFalse($isPrivate);
     }
 
-    /**
-     * @return void
-     */
     public function testMarkAsPrivate(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -375,9 +325,6 @@ class FileSystemServiceTest extends Unit
         $this->assertTrue($isPrivate);
     }
 
-    /**
-     * @return void
-     */
     public function testMarkAsPublic(): void
     {
         $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
@@ -391,9 +338,6 @@ class FileSystemServiceTest extends Unit
         $this->assertFalse($isPublic);
     }
 
-    /**
-     * @return void
-     */
     public function testCreateDirectory(): void
     {
         $fileSystemCreateDirectoryTransfer = new FileSystemCreateDirectoryTransfer();
@@ -406,9 +350,6 @@ class FileSystemServiceTest extends Unit
         $this->assertDirectoryExists($dir);
     }
 
-    /**
-     * @return void
-     */
     public function testDeleteDirectory(): void
     {
         $fileSystemDeleteDirectoryTransfer = new FileSystemDeleteDirectoryTransfer();
@@ -423,9 +364,6 @@ class FileSystemServiceTest extends Unit
         $this->assertDirectoryDoesNotExist($dir);
     }
 
-    /**
-     * @return void
-     */
     public function testReadStream(): void
     {
         $fileSystemStreamTransfer = $this->createStreamTransfer();
@@ -441,9 +379,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame(static::FILE_CONTENT, $content);
     }
 
-    /**
-     * @return void
-     */
     public function testWriteStream(): void
     {
         $fileSystemStreamTransfer = $this->createStreamTransfer();
@@ -464,9 +399,6 @@ class FileSystemServiceTest extends Unit
         $this->assertSame(static::FILE_CONTENT, $content);
     }
 
-    /**
-     * @return void
-     */
     public function testListContentsWithoutRecursiveShouldReturnOnlyFirstLevelFiles(): void
     {
         // Arrange
@@ -485,9 +417,6 @@ class FileSystemServiceTest extends Unit
         $this->assertCount(1, $content);
     }
 
-    /**
-     * @return void
-     */
     public function testListContentsWithRecursiveShouldReturnAllLevelsFiles(): void
     {
         // Arrange
@@ -506,12 +435,6 @@ class FileSystemServiceTest extends Unit
         $this->assertCount(2, $content);
     }
 
-    /**
-     * @param string|null $content
-     * @param string|null $modifiedTimestamp
-     *
-     * @return void
-     */
     protected function createDocumentFile(?string $content = null, ?string $modifiedTimestamp = null): void
     {
         $dir = $this->testDataFileSystemRootDirectory . static::PATH_DOCUMENT . 'foo';
@@ -530,12 +453,6 @@ class FileSystemServiceTest extends Unit
         }
     }
 
-    /**
-     * @param string|null $content
-     * @param string|null $modifiedTimestamp
-     *
-     * @return void
-     */
     protected function createDocumentFileInRoot(?string $content = null, ?string $modifiedTimestamp = null): void
     {
         $file = $this->testDataFileSystemRootDirectory . static::FILE_DOCUMENT;
@@ -562,9 +479,6 @@ class FileSystemServiceTest extends Unit
         return file_get_contents($file);
     }
 
-    /**
-     * @return void
-     */
     protected function directoryCleanup(): void
     {
         foreach ($this->getFileListForCleanup() as $file) {
@@ -608,9 +522,6 @@ class FileSystemServiceTest extends Unit
         ];
     }
 
-    /**
-     * @return \Generated\Shared\Transfer\FileSystemQueryTransfer
-     */
     protected function createDocumentQueryTransfer(): FileSystemQueryTransfer
     {
         $fileSystemQueryTransfer = new FileSystemQueryTransfer();
@@ -620,9 +531,6 @@ class FileSystemServiceTest extends Unit
         return $fileSystemQueryTransfer;
     }
 
-    /**
-     * @return \Generated\Shared\Transfer\FileSystemVisibilityTransfer
-     */
     protected function createDocumentVisibilityTransfer(): FileSystemVisibilityTransfer
     {
         $fileSystemVisibilityTransfer = new FileSystemVisibilityTransfer();
@@ -632,9 +540,6 @@ class FileSystemServiceTest extends Unit
         return $fileSystemVisibilityTransfer;
     }
 
-    /**
-     * @return \Generated\Shared\Transfer\FileSystemContentTransfer
-     */
     protected function createContentTransfer(): FileSystemContentTransfer
     {
         $fileSystemContentTransfer = new FileSystemContentTransfer();
@@ -645,9 +550,6 @@ class FileSystemServiceTest extends Unit
         return $fileSystemContentTransfer;
     }
 
-    /**
-     * @return \Generated\Shared\Transfer\FileSystemStreamTransfer
-     */
     protected function createStreamTransfer(): FileSystemStreamTransfer
     {
         $fileSystemStreamTransfer = new FileSystemStreamTransfer();
@@ -657,9 +559,6 @@ class FileSystemServiceTest extends Unit
         return $fileSystemStreamTransfer;
     }
 
-    /**
-     * @return string
-     */
     protected function getDocumentFileName(): string
     {
         return $this->testDataFileSystemRootDirectory . static::PATH_DOCUMENT . 'foo/' . static::FILE_DOCUMENT;

@@ -24,9 +24,6 @@ class FileSystemWriter implements FileSystemWriterInterface
      */
     protected $fileSystemWriter;
 
-    /**
-     * @param \Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemWriterPluginInterface $fileSystemWriterPlugin
-     */
     public function __construct(FileSystemWriterPluginInterface $fileSystemWriterPlugin)
     {
         $this->fileSystemWriter = $fileSystemWriterPlugin;
