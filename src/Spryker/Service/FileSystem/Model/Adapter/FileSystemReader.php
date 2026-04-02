@@ -10,18 +10,14 @@ namespace Spryker\Service\FileSystem\Model\Adapter;
 use Generated\Shared\Transfer\FileSystemListTransfer;
 use Generated\Shared\Transfer\FileSystemQueryTransfer;
 use Spryker\Service\FileSystem\Model\FileSystemReaderInterface;
+use Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException;
+use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemPublicUrlGeneratorPluginInterface;
 use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemReaderPluginInterface;
 
 class FileSystemReader implements FileSystemReaderInterface
 {
-    /**
-     * @var \Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemReaderPluginInterface
-     */
-    protected $fileSystemReader;
-
-    public function __construct(FileSystemReaderPluginInterface $fileSystemReaderPlugin)
+    public function __construct(protected FileSystemReaderPluginInterface $fileSystemReaderPlugin)
     {
-        $this->fileSystemReader = $fileSystemReaderPlugin;
     }
 
     /**
@@ -31,7 +27,7 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function getMimeType(FileSystemQueryTransfer $fileSystemQueryTransfer)
     {
-        return $this->fileSystemReader->getMimeType($fileSystemQueryTransfer);
+        return $this->fileSystemReaderPlugin->getMimeType($fileSystemQueryTransfer);
     }
 
     /**
@@ -41,7 +37,7 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function getTimestamp(FileSystemQueryTransfer $fileSystemQueryTransfer)
     {
-        return $this->fileSystemReader->getTimestamp($fileSystemQueryTransfer);
+        return $this->fileSystemReaderPlugin->getTimestamp($fileSystemQueryTransfer);
     }
 
     /**
@@ -51,7 +47,7 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function getSize(FileSystemQueryTransfer $fileSystemQueryTransfer)
     {
-        return $this->fileSystemReader->getSize($fileSystemQueryTransfer);
+        return $this->fileSystemReaderPlugin->getSize($fileSystemQueryTransfer);
     }
 
     /**
@@ -61,7 +57,7 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function isPrivate(FileSystemQueryTransfer $fileSystemQueryTransfer)
     {
-        return $this->fileSystemReader->isPrivate($fileSystemQueryTransfer);
+        return $this->fileSystemReaderPlugin->isPrivate($fileSystemQueryTransfer);
     }
 
     /**
@@ -71,7 +67,7 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function read(FileSystemQueryTransfer $fileSystemQueryTransfer)
     {
-        return $this->fileSystemReader->read($fileSystemQueryTransfer);
+        return $this->fileSystemReaderPlugin->read($fileSystemQueryTransfer);
     }
 
     /**
@@ -81,7 +77,7 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function listContents(FileSystemListTransfer $fileSystemListTransfer)
     {
-        return $this->fileSystemReader->listContents($fileSystemListTransfer);
+        return $this->fileSystemReaderPlugin->listContents($fileSystemListTransfer);
     }
 
     /**
@@ -91,6 +87,19 @@ class FileSystemReader implements FileSystemReaderInterface
      */
     public function has(FileSystemQueryTransfer $fileSystemQueryTransfer)
     {
-        return $this->fileSystemReader->has($fileSystemQueryTransfer);
+        return $this->fileSystemReaderPlugin->has($fileSystemQueryTransfer);
+    }
+
+    public function getPublicUrl(FileSystemQueryTransfer $fileSystemQueryTransfer): string
+    {
+        if (!$this->fileSystemReaderPlugin instanceof FileSystemPublicUrlGeneratorPluginInterface) {
+            throw new FileSystemReadException(sprintf(
+                'Plugin %s does not implement %s.',
+                $this->fileSystemReaderPlugin::class,
+                FileSystemPublicUrlGeneratorPluginInterface::class,
+            ));
+        }
+
+        return $this->fileSystemReaderPlugin->getPublicUrl($fileSystemQueryTransfer);
     }
 }

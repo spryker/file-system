@@ -279,4 +279,20 @@ interface FileSystemServiceInterface
      * @return void
      */
     public function writeStream(FileSystemStreamTransfer $fileSystemStreamTransfer, $stream);
+
+    /**
+     * Specification:
+     * - Important! This method is not supported by all file system implementations, make sure to check if plugin is provided before using it.
+     * - Generate a public URL for the given resource path
+     * - Return public URL string, throw exception on failure
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\FileSystemQueryTransfer $fileSystemQueryTransfer
+     *
+     * @throws \Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException
+     *
+     * @return string
+     */
+    public function getPublicUrl(FileSystemQueryTransfer $fileSystemQueryTransfer): string;
 }

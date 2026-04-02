@@ -399,6 +399,19 @@ class FileSystemServiceTest extends Unit
         $this->assertSame(static::FILE_CONTENT, $content);
     }
 
+    public function testGetPublicUrlThrowsExceptionWhenNoUrlGeneratorConfigured(): void
+    {
+        // Arrange
+        $this->createDocumentFile();
+        $fileSystemQueryTransfer = $this->createDocumentQueryTransfer();
+
+        // Assert
+        $this->expectException(FileSystemReadException::class);
+
+        // Act
+        $this->fileSystemService->getPublicUrl($fileSystemQueryTransfer);
+    }
+
     public function testListContentsWithoutRecursiveShouldReturnOnlyFirstLevelFiles(): void
     {
         // Arrange

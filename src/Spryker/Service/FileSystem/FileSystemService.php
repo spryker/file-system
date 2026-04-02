@@ -331,4 +331,22 @@ class FileSystemService extends AbstractService implements FileSystemServiceInte
             ->createFileSystemReader()
             ->has($fileSystemQueryTransfer);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\FileSystemQueryTransfer $fileSystemQueryTransfer
+     *
+     * @throws \Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException
+     *
+     * @return string
+     */
+    public function getPublicUrl(FileSystemQueryTransfer $fileSystemQueryTransfer): string
+    {
+        return $this->getFactory()
+            ->createFileSystemReader()
+            ->getPublicUrl($fileSystemQueryTransfer);
+    }
 }

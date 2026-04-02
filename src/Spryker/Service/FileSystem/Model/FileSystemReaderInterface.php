@@ -74,4 +74,6 @@ interface FileSystemReaderInterface
      * @return bool
      */
     public function has(FileSystemQueryTransfer $fileSystemQueryTransfer);
+
+    public function getPublicUrl(FileSystemQueryTransfer $fileSystemQueryTransfer): string;
 }
