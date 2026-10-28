@@ -18,17 +18,22 @@ use Generated\Shared\Transfer\FileSystemListTransfer;
 use Generated\Shared\Transfer\FileSystemQueryTransfer;
 use Generated\Shared\Transfer\FileSystemRenameTransfer;
 use Generated\Shared\Transfer\FileSystemStreamTransfer;
+use Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer;
 use Generated\Shared\Transfer\FileSystemVisibilityTransfer;
 use Spryker\Service\FileSystem\FileSystemDependencyProvider;
 use Spryker\Service\FileSystem\FileSystemService;
 use Spryker\Service\FileSystem\FileSystemServiceFactory;
+use Spryker\Service\FileSystem\FileSystemServiceInterface;
 use Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException;
+use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemReaderPluginInterface;
+use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemTemporaryUrlGeneratorPluginInterface;
 use Spryker\Service\Flysystem\FlysystemDependencyProvider;
 use Spryker\Service\Flysystem\FlysystemService;
 use Spryker\Service\Flysystem\FlysystemServiceFactory;
 use Spryker\Service\Flysystem\Plugin\FileSystem\FileSystemReaderPlugin;
 use Spryker\Service\Flysystem\Plugin\FileSystem\FileSystemStreamPlugin;
 use Spryker\Service\Flysystem\Plugin\FileSystem\FileSystemWriterPlugin;
+use Spryker\Service\FlysystemAws3v3FileSystem\Plugin\Flysystem\Aws3v3FilesystemBuilderPlugin;
 use Spryker\Service\FlysystemLocalFileSystem\Plugin\Flysystem\LocalFilesystemBuilderPlugin;
 use Spryker\Service\Kernel\Container;
 use SprykerTest\Service\FileSystem\Stub\FileSystemConfigStub;
@@ -91,6 +96,26 @@ class FileSystemServiceTest extends Unit
     public const FILE_CONTENT = 'Hello World';
 
     /**
+     * @var string
+     */
+    public const FILE_SYSTEM_AWS_S3 = 's3FileSystem';
+
+    /**
+     * @var string
+     */
+    public const AWS_S3_BUCKET = 'test-bucket';
+
+    /**
+     * @var string
+     */
+    public const AWS_S3_REGION = 'eu-central-1';
+
+    /**
+     * @var string
+     */
+    protected const CONTENT_DISPOSITION = 'attachment; filename="customer.txt"';
+
+    /**
      * @var \Spryker\Service\FileSystem\FileSystemServiceInterface
      */
     protected $fileSystemService;
@@ -124,6 +149,7 @@ class FileSystemServiceTest extends Unit
         $flysystemContainer[FlysystemDependencyProvider::PLUGIN_COLLECTION_FILESYSTEM_BUILDER] = function () {
             return [
                 new LocalFilesystemBuilderPlugin(),
+                new Aws3v3FilesystemBuilderPlugin(),
             ];
         };
 
@@ -412,6 +438,66 @@ class FileSystemServiceTest extends Unit
         $this->fileSystemService->getPublicUrl($fileSystemQueryTransfer);
     }
 
+    public function testGetTemporaryUrlReturnsPresignedUrlForAwsS3FileSystem(): void
+    {
+        // Arrange
+        $fileSystemTemporaryUrlQueryTransfer = $this->createAwsS3TemporaryUrlQueryTransfer('+10 minutes')
+            ->setConfig(['get_object_options' => ['ResponseContentDisposition' => static::CONTENT_DISPOSITION]]);
+
+        // Act
+        $temporaryUrl = $this->fileSystemService->getTemporaryUrl($fileSystemTemporaryUrlQueryTransfer);
+
+        // Assert
+        parse_str((string)parse_url($temporaryUrl, PHP_URL_QUERY), $query);
+        $expectedHost = sprintf('%s.s3.%s.amazonaws.com', static::AWS_S3_BUCKET, static::AWS_S3_REGION);
+        $this->assertSame($expectedHost, parse_url($temporaryUrl, PHP_URL_HOST));
+        $this->assertSame('/' . static::PATH_DOCUMENT . static::FILE_DOCUMENT, parse_url($temporaryUrl, PHP_URL_PATH));
+        $this->assertEqualsWithDelta(600, (int)$query['X-Amz-Expires'], 1);
+        $this->assertArrayHasKey('X-Amz-Signature', $query);
+        $this->assertSame(static::CONTENT_DISPOSITION, $query['response-content-disposition']);
+    }
+
+    public function testGetTemporaryUrlThrowsExceptionWhenNoUrlGeneratorConfigured(): void
+    {
+        // Arrange
+        $this->createDocumentFile();
+        $fileSystemTemporaryUrlQueryTransfer = (new FileSystemTemporaryUrlQueryTransfer())
+            ->setFileSystemName(static::FILE_SYSTEM_DOCUMENT)
+            ->setPath('/foo/' . static::FILE_DOCUMENT)
+            ->setExpiresAt('+10 minutes');
+
+        // Assert
+        $this->expectException(FileSystemReadException::class);
+
+        // Act
+        $this->fileSystemService->getTemporaryUrl($fileSystemTemporaryUrlQueryTransfer);
+    }
+
+    public function testGetTemporaryUrlThrowsExceptionWhenExpirationCannotBeParsed(): void
+    {
+        // Arrange
+        $fileSystemTemporaryUrlQueryTransfer = $this->createAwsS3TemporaryUrlQueryTransfer('not-a-date');
+
+        // Assert
+        $this->expectException(FileSystemReadException::class);
+
+        // Act
+        $this->fileSystemService->getTemporaryUrl($fileSystemTemporaryUrlQueryTransfer);
+    }
+
+    public function testGetTemporaryUrlThrowsExceptionWhenReaderPluginDoesNotSupportTemporaryUrls(): void
+    {
+        // Arrange
+        $fileSystemService = $this->createFileSystemServiceWithReaderPlugin($this->createStub(FileSystemReaderPluginInterface::class));
+
+        // Assert
+        $this->expectException(FileSystemReadException::class);
+        $this->expectExceptionMessage(FileSystemTemporaryUrlGeneratorPluginInterface::class);
+
+        // Act
+        $fileSystemService->getTemporaryUrl($this->createAwsS3TemporaryUrlQueryTransfer('+10 minutes'));
+    }
+
     public function testListContentsWithoutRecursiveShouldReturnOnlyFirstLevelFiles(): void
     {
         // Arrange
@@ -542,6 +628,31 @@ class FileSystemServiceTest extends Unit
         $fileSystemQueryTransfer->setPath('/foo/' . static::FILE_DOCUMENT);
 
         return $fileSystemQueryTransfer;
+    }
+
+    protected function createAwsS3TemporaryUrlQueryTransfer(string $expiresAt): FileSystemTemporaryUrlQueryTransfer
+    {
+        return (new FileSystemTemporaryUrlQueryTransfer())
+            ->setFileSystemName(static::FILE_SYSTEM_AWS_S3)
+            ->setPath(static::FILE_DOCUMENT)
+            ->setExpiresAt($expiresAt);
+    }
+
+    protected function createFileSystemServiceWithReaderPlugin(FileSystemReaderPluginInterface $fileSystemReaderPlugin): FileSystemServiceInterface
+    {
+        $container = new Container();
+        $container[FileSystemDependencyProvider::PLUGIN_READER] = function () use ($fileSystemReaderPlugin) {
+            return $fileSystemReaderPlugin;
+        };
+
+        $factory = new FileSystemServiceFactory();
+        $factory->setConfig(new FileSystemConfigStub());
+        $factory->setContainer($container);
+
+        $fileSystemService = new FileSystemService();
+        $fileSystemService->setFactory($factory);
+
+        return $fileSystemService;
     }
 
     protected function createDocumentVisibilityTransfer(): FileSystemVisibilityTransfer

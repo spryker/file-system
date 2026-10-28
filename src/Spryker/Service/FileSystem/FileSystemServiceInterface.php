@@ -16,6 +16,7 @@ use Generated\Shared\Transfer\FileSystemListTransfer;
 use Generated\Shared\Transfer\FileSystemQueryTransfer;
 use Generated\Shared\Transfer\FileSystemRenameTransfer;
 use Generated\Shared\Transfer\FileSystemStreamTransfer;
+use Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer;
 use Generated\Shared\Transfer\FileSystemVisibilityTransfer;
 
 /**
@@ -295,4 +296,25 @@ interface FileSystemServiceInterface
      * @return string
      */
     public function getPublicUrl(FileSystemQueryTransfer $fileSystemQueryTransfer): string;
+
+    /**
+     * Specification:
+     * - Important! This method is not supported by all file system implementations, make sure the reader plugin implements `FileSystemTemporaryUrlGeneratorPluginInterface` and the filesystem adapter supports temporary URLs (e.g. AWS S3).
+     * - Requires `FileSystemTemporaryUrlQueryTransfer.fileSystemName`, `FileSystemTemporaryUrlQueryTransfer.path` and `FileSystemTemporaryUrlQueryTransfer.expiresAt` to be set.
+     * - Generate a temporary URL for the given resource path that stops working at `FileSystemTemporaryUrlQueryTransfer.expiresAt`.
+     * - Accepts any `FileSystemTemporaryUrlQueryTransfer.expiresAt` value supported by `DateTimeImmutable`, e.g. `+10 minutes`; the maximum lifetime depends on the adapter (AWS S3: 7 days).
+     * - Passes `FileSystemTemporaryUrlQueryTransfer.config` to the filesystem adapter, e.g. `get_object_options` and `presigned_request_options` for AWS S3.
+     * - Does not check whether the resource exists.
+     * - When the filesystem uses temporary credentials (e.g. an IAM role), the URL stops working when those credentials expire, even if `expiresAt` is later.
+     * - Return temporary URL string, throw exception on failure
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer $fileSystemTemporaryUrlQueryTransfer
+     *
+     * @throws \Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException
+     *
+     * @return string
+     */
+    public function getTemporaryUrl(FileSystemTemporaryUrlQueryTransfer $fileSystemTemporaryUrlQueryTransfer): string;
 }

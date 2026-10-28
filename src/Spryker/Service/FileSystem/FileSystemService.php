@@ -16,6 +16,7 @@ use Generated\Shared\Transfer\FileSystemListTransfer;
 use Generated\Shared\Transfer\FileSystemQueryTransfer;
 use Generated\Shared\Transfer\FileSystemRenameTransfer;
 use Generated\Shared\Transfer\FileSystemStreamTransfer;
+use Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer;
 use Generated\Shared\Transfer\FileSystemVisibilityTransfer;
 use Spryker\Service\Kernel\AbstractService;
 
@@ -348,5 +349,23 @@ class FileSystemService extends AbstractService implements FileSystemServiceInte
         return $this->getFactory()
             ->createFileSystemReader()
             ->getPublicUrl($fileSystemQueryTransfer);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param \Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer $fileSystemTemporaryUrlQueryTransfer
+     *
+     * @throws \Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException
+     *
+     * @return string
+     */
+    public function getTemporaryUrl(FileSystemTemporaryUrlQueryTransfer $fileSystemTemporaryUrlQueryTransfer): string
+    {
+        return $this->getFactory()
+            ->createFileSystemReader()
+            ->getTemporaryUrl($fileSystemTemporaryUrlQueryTransfer);
     }
 }

@@ -9,10 +9,12 @@ namespace Spryker\Service\FileSystem\Model\Adapter;
 
 use Generated\Shared\Transfer\FileSystemListTransfer;
 use Generated\Shared\Transfer\FileSystemQueryTransfer;
+use Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer;
 use Spryker\Service\FileSystem\Model\FileSystemReaderInterface;
 use Spryker\Service\FileSystemExtension\Dependency\Exception\FileSystemReadException;
 use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemPublicUrlGeneratorPluginInterface;
 use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemReaderPluginInterface;
+use Spryker\Service\FileSystemExtension\Dependency\Plugin\FileSystemTemporaryUrlGeneratorPluginInterface;
 
 class FileSystemReader implements FileSystemReaderInterface
 {
@@ -101,5 +103,18 @@ class FileSystemReader implements FileSystemReaderInterface
         }
 
         return $this->fileSystemReaderPlugin->getPublicUrl($fileSystemQueryTransfer);
+    }
+
+    public function getTemporaryUrl(FileSystemTemporaryUrlQueryTransfer $fileSystemTemporaryUrlQueryTransfer): string
+    {
+        if (!$this->fileSystemReaderPlugin instanceof FileSystemTemporaryUrlGeneratorPluginInterface) {
+            throw new FileSystemReadException(sprintf(
+                'Plugin %s does not implement %s.',
+                $this->fileSystemReaderPlugin::class,
+                FileSystemTemporaryUrlGeneratorPluginInterface::class,
+            ));
+        }
+
+        return $this->fileSystemReaderPlugin->getTemporaryUrl($fileSystemTemporaryUrlQueryTransfer);
     }
 }

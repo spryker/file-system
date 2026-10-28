@@ -9,6 +9,7 @@ namespace SprykerTest\Service\FileSystem\Stub;
 
 use Codeception\Configuration;
 use Spryker\Service\Flysystem\FlysystemConfig as SprykerFlysystemConfig;
+use Spryker\Service\FlysystemAws3v3FileSystem\Plugin\Flysystem\Aws3v3FilesystemBuilderPlugin;
 use Spryker\Service\FlysystemLocalFileSystem\Plugin\Flysystem\LocalFilesystemBuilderPlugin;
 use SprykerTest\Service\FileSystem\FileSystemServiceTest;
 
@@ -31,6 +32,14 @@ class FlysystemConfigStub extends SprykerFlysystemConfig
                 'sprykerAdapterClass' => LocalFilesystemBuilderPlugin::class,
                 'root' => $testDataFlysystemRootDirectory,
                 'path' => FileSystemServiceTest::PATH_DOCUMENT,
+            ],
+            FileSystemServiceTest::FILE_SYSTEM_AWS_S3 => [
+                'sprykerAdapterClass' => Aws3v3FilesystemBuilderPlugin::class,
+                'path' => FileSystemServiceTest::PATH_DOCUMENT,
+                'key' => 'test-key',
+                'secret' => 'test-secret',
+                'bucket' => FileSystemServiceTest::AWS_S3_BUCKET,
+                'region' => FileSystemServiceTest::AWS_S3_REGION,
             ],
         ];
     }

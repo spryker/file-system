@@ -9,6 +9,7 @@ namespace Spryker\Service\FileSystem\Model;
 
 use Generated\Shared\Transfer\FileSystemListTransfer;
 use Generated\Shared\Transfer\FileSystemQueryTransfer;
+use Generated\Shared\Transfer\FileSystemTemporaryUrlQueryTransfer;
 
 interface FileSystemReaderInterface
 {
@@ -76,4 +77,6 @@ interface FileSystemReaderInterface
     public function has(FileSystemQueryTransfer $fileSystemQueryTransfer);
 
     public function getPublicUrl(FileSystemQueryTransfer $fileSystemQueryTransfer): string;
+
+    public function getTemporaryUrl(FileSystemTemporaryUrlQueryTransfer $fileSystemTemporaryUrlQueryTransfer): string;
 }
